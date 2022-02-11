@@ -1,0 +1,87 @@
+﻿@model SettingsViewModel;
+
+@{
+    ViewData["Title"] = "DCA with OpenNode";
+}
+
+<div class="text-center">
+    <h1 class="display-4">DCA with OpenNode</h1>
+
+    @if (!Model.IsSetup)
+    {
+        <div class="alert alert-danger">
+            <p>No Settings Detected</p>
+        </div>
+    }
+    else
+    {
+        if (Model.SettingsUpdated)
+        {
+            <div class="alert alert-success">
+                <p>Settings updated
+                </p>
+            </div>
+        }
+        <div class="alert alert-primary">
+            <p>Configured to purchase @string.Format("{0:C}", Model.Amount) of BTC every @Model.RecurrenceMinutes minutes
+            </p>
+        </div>
+        <div class="alert alert-success">
+            <p id="lastPurchase">Checking for last BTC purchase...</p>
+        </div>
+    }
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-6 text-left">
+            <form action="/home/savesettings" method="post">
+                <div class="form-group">
+                    <label for="inputAmount">Amount ($)</label>
+                    @if (Model.IsSetup)
+                    {
+                        <input type="decimal" class="form-control" id="inputAmount" aria-describedby="amountHelp"
+                        placeholder="1.00" name="Amount" value="@Model.Amount">
+                    }
+                    else
+                    {
+                        <input type="decimal" class="form-control" id="inputAmount" aria-describedby="amountHelp"
+                        placeholder="1.00" name="Amount">
+                    }
+                    <small id="amountHelp" class="form-text text-muted">The amount of fiat to convert to BTC</small>
+                </div>
+                <div class="form-group">
+                    <label for="inputRecurrencce">Recurrence in minutes</label>
+                    @if (Model.IsSetup)
+                    {
+                        <input type="number" class="form-control" id="inputRecurrence" aria-describedby="recurrenceHelp"
+                        placeholder="60" name="RecurrenceMinutes" value="@Model.RecurrenceMinutes">
+                    }
+                    else
+                    {
+                        <input type="number" class="form-control" id="inputRecurrence" aria-describedby="recurrenceHelp"
+                        placeholder="60" name="RecurrenceMinutes">
+                    }
+                    <small id="recurrenceHelp" class="form-text text-muted">How often to repeat this
+                        conversion</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function tick() {
+            $.get("/home/GetLastPurchase", function (data) {
+                var msg = `Purchased ${data.satoshis.toLocaleString('en-US')} satoshis at ${data.purchaseDateUtc}`;
+                $("#lastPurchase").html(msg);
+            });
+        }
+
+        $(document).ready(function () {
+            t = setInterval(tick, 30000);
+        })
+    </script>
+}
