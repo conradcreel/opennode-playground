@@ -1,5 +1,7 @@
 using OpenNode.ApiClient.Models;
 using OpenNode.ApiClient.Dto;
+using OpenNode.ApiClient.Dto.Response;
+using OpenNode.ApiClient.Dto.Request;
 
 namespace OpenNode.ApiClient;
 
@@ -20,5 +22,11 @@ public partial class OpenNodeClient
         {
             Ticker = ticker
         }).ToList();
+    }
+
+    public async Task<OpenNodeResponse<GetSupportedCurrenciesResponse>>
+        GetSupportedCurrencies(GetSupportedCurrenciesRequest request)
+    {
+        throw new NotImplementedException();
     }
 }
